@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  united_remote_web:
+    image: webdevops/php-nginx-dev:7.4
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - 80:80
+    environment:
+      WEB_DOCUMENT_ROOT: /var/www/html/public
+      LOG_STDOUT: /var/www/html/var/log/error_log
+      LOG_STDERR: /var/www/html/var/log/error_log
+    links:
+      - united_remote_db
+    working_dir: /var/www/html
+    container_name: united_remote_web
+    networks:
+      - united_remote_dev
+
+  united_remote_db:
+    image: mysql:5.7
+    volumes:
+      - mysql_united_remote:/var/lib/mysql:rw
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: poker
+      MYSQL_USER: united_remote
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    container_name: united_remote_db
+    networks:
+      - united_remote_dev
+
+volumes:
+  mysql_united_remote:
+
+networks:
+  united_remote_dev:
+      driver: bridge
+      name: united_remote_dev
+      ipam:
+          driver: default
