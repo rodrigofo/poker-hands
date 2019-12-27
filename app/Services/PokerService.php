@@ -36,6 +36,8 @@ class PokerService
     private Collection $shifted;
     /** @var mixed */
     private $distance;
+    /** @var int */
+    private int $score;
 
     /**
      * Hand constructor.
@@ -110,6 +112,47 @@ class PokerService
     public function calculateScore(): int
     {
         $this->sortCards();
+
+        // High card
+        $this->score = 0;
+
+        if ($this->isOnePair()) {
+            $this->score = 1;
+        }
+
+        if ($this->isTwoPairs()) {
+            $this->score = 2;
+        }
+
+        if ($this->isThreeOfKind()) {
+            $this->score = 3;
+        }
+
+        if ($this->isStraight()) {
+            $this->score = 4;
+        }
+
+        if ($this->isFlush()) {
+            $this->score = 5;
+        }
+
+        if ($this->isFullHouse()) {
+            $this->score = 6;
+        }
+
+        if ($this->isFourOfKind()) {
+            $this->score = 7;
+        }
+
+        if ($this->isStraightFlush()) {
+            $this->score = 8;
+        }
+
+        if ($this->isRoyalFlush()) {
+            $this->score = 9;
+        }
+
+        return $this->score;
     }
 
     private function sortCards(): void
@@ -232,5 +275,13 @@ class PokerService
         return $this->isStraightFlush()
             && $this->faces[0] === array_flip(self::FACES)['T']
             && $this->suits[0] === array_flip(self::SUITS)['S'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getScore(): int
+    {
+        return $this->score;
     }
 }
