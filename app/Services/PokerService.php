@@ -30,6 +30,12 @@ class PokerService
     private Collection $faces;
     /** @var Collection */
     private Collection $suits;
+    /** @var Collection */
+    private Collection $groups;
+    /** @var Collection */
+    private Collection $shifted;
+    /** @var mixed */
+    private $distance;
 
     /**
      * Hand constructor.
@@ -88,5 +94,65 @@ class PokerService
             );
 
         return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getCards(): Collection
+    {
+        return $this->cards;
+    }
+
+    /**
+     * @return int
+     */
+    public function calculateScore(): int
+    {
+        $this->sortCards();
+    }
+
+    private function sortCards(): void
+    {
+        $this->processGroups();
+        $this->processShifted();
+        $this->calculateDistance();
+    }
+
+    private function processGroups(): void
+    {
+        $this->groups = Collection::make(self::FACES)
+            ->map(
+                function ($face, $index) {
+                    return $this->faces->filter(
+                        static function ($cardFace) use ($index) {
+                            return $index === $cardFace;
+                        }
+                    )->count();
+                }
+            )
+            ->sortByDesc(
+                static function ($card) {
+                    return $card;
+                }
+            )
+            ->values();
+    }
+
+    private function processShifted(): void
+    {
+        $this->shifted = $this->faces->map(
+            static function ($face) {
+                return ($face + 1) % 13;
+            }
+        );
+    }
+
+    private function calculateDistance(): void
+    {
+        $this->distance = min(
+            $this->faces->max() - $this->faces->min(),
+            $this->shifted->max() - $this->shifted->min()
+        );
     }
 }
