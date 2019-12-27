@@ -155,4 +155,82 @@ class PokerService
             $this->shifted->max() - $this->shifted->min()
         );
     }
+
+    /**
+     * @return bool
+     */
+    private function isFlush(): bool
+    {
+        return $this->suits->every(
+            function ($suit) {
+                return $suit === $this->suits[0];
+            }
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function isStraight(): bool
+    {
+        return $this->groups[0] === 1 && $this->distance < 5;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isStraightFlush(): bool
+    {
+        return $this->isStraight() && $this->isFlush();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isFourOfKind(): bool
+    {
+        return $this->groups[0] === 4;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isFullHouse(): bool
+    {
+        return $this->groups[0] === 3 && $this->groups[1] === 2;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isThreeOfKind(): bool
+    {
+        return $this->groups[0] === 3;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isTwoPairs(): bool
+    {
+        return $this->groups[0] === 2 && $this->groups[1] === 2;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isOnePair(): bool
+    {
+        return $this->groups[0] === 2;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRoyalFlush(): bool
+    {
+        return $this->isStraightFlush()
+            && $this->faces[0] === array_flip(self::FACES)['T']
+            && $this->suits[0] === array_flip(self::SUITS)['S'];
+    }
 }
