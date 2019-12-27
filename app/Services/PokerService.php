@@ -56,11 +56,7 @@ class PokerService
      */
     private function setCards(Collection $cards): void
     {
-        $this->cards = $cards->map(
-            static function ($card) {
-                return str_replace('\n', '', trim($card));
-            }
-        );
+        $this->cards = $cards;
 
         $this->setFaces();
         $this->setSuits();
