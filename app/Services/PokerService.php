@@ -284,4 +284,12 @@ class PokerService
     {
         return $this->score;
     }
+
+    /**
+     * @return int
+     */
+    public function getHigherCard(): int
+    {
+        return $this->faces->max();
+    }
 }
