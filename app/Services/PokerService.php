@@ -19,13 +19,7 @@ class PokerService
         'Straight Flush',
         'Royal Flush',
     ];
-    /** @var array */
-    private const FACES = [2, 3, 4, 5, 6, 7, 8, 9, 'T', 'J', 'Q', 'K', 'A'];
-    /** @var array */
-    private const SUITS = ['C', 'D', 'H', 'S'];
 
-    /** @var Collection */
-    private Collection $cards;
     /** @var Collection */
     private Collection $faces;
     /** @var Collection */
@@ -38,74 +32,25 @@ class PokerService
     private $distance;
     /** @var int */
     private int $score;
+    /** @var HandService */
+    private HandService $hand;
 
     /**
-     * Hand constructor.
+     * @param HandService $hand
      *
-     * @param Collection|null $cards
-     */
-    public function __construct(?Collection $cards = null)
-    {
-        if ($cards) {
-            $this->setCards($cards);
-        }
-    }
-
-    /**
-     * @param Collection $cards
-     */
-    public function setCards(Collection $cards): void
-    {
-        $this->cards = $cards;
-
-        $this->setFaces();
-        $this->setSuits();
-    }
-
-    /**
      * @return $this
      */
-    private function setFaces(): self
+    public function setHand(HandService $hand): self
     {
-        $this->faces = $this->cards
-            ->map(
-                static function ($card) {
-                    return array_flip(self::FACES)[$card[0]];
-                }
-            )
-            ->sort()
-            ->values();
+        $this->hand = $hand;
 
         return $this;
     }
 
     /**
-     * @return $this
+     * @return PokerService
      */
-    private function setSuits(): self
-    {
-        $this->suits = $this->cards
-            ->map(
-                static function ($card) {
-                    return array_flip(self::SUITS)[$card[1]];
-                }
-            );
-
-        return $this;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getCards(): Collection
-    {
-        return $this->cards;
-    }
-
-    /**
-     * @return int
-     */
-    public function calculateScore(): int
+    public function calculateScore(): self
     {
         $this->sortCards();
 
@@ -148,7 +93,7 @@ class PokerService
             $this->score = 9;
         }
 
-        return $this->score;
+        return $this;
     }
 
     private function sortCards(): void
@@ -160,7 +105,7 @@ class PokerService
 
     private function processGroups(): void
     {
-        $this->groups = Collection::make(self::FACES)
+        $this->groups = Collection::make($this->hand::FACES)
             ->map(
                 function ($face, $index) {
                     return $this->faces->filter(
@@ -269,8 +214,8 @@ class PokerService
     private function isRoyalFlush(): bool
     {
         return $this->isStraightFlush()
-            && $this->faces[0] === array_flip(self::FACES)['T']
-            && $this->suits[0] === array_flip(self::SUITS)['S'];
+            && $this->faces[0] === array_flip($this->hand::FACES)['T']
+            && $this->suits[0] === array_flip($this->hand::SUITS)['S'];
     }
 
     /**
@@ -279,13 +224,5 @@ class PokerService
     public function getScore(): int
     {
         return $this->score;
-    }
-
-    /**
-     * @return int
-     */
-    public function getHigherCard(): int
-    {
-        return $this->faces->max();
     }
 }
