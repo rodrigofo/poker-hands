@@ -22,7 +22,7 @@
 
                         You are logged in!
 
-                        <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ URL::route('upload') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <input type="file" name="game">
@@ -54,7 +54,7 @@
                                 @foreach($games as $game)
                                     <tr>
                                         <td>
-                                            <a href="#">Game #{{ $game->id }}</a>
+                                            <a href="{{ URL::route('game', ['game' => $game]) }}">Game #{{ $game->id }}</a>
                                         </td>
 
                                         <td>{{ $game->player1Wins()->count() }}</td>

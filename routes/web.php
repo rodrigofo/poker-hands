@@ -23,3 +23,7 @@ Route::get('/home', 'HomeController@index')
 Route::post('/upload', 'HomeController@upload')
     ->middleware('auth')
     ->name('upload');
+
+Route::get('/game/{game}', 'GameController@game')
+    ->middleware('auth')
+    ->name('game');
