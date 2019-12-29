@@ -15,6 +15,13 @@
                         @endif
 
                         You are logged in!
+
+                        <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+
+                            <input type="file" name="game">
+                            <button type="submit">Upload new game</button>
+                        </form>
                     </div>
                 </div>
             </div>

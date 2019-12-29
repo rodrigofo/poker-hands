@@ -19,3 +19,7 @@ Route::get('/', function () {
 Route::get('/home', 'HomeController@index')
     ->middleware('auth')
     ->name('home');
+
+Route::post('/upload', 'HomeController@upload')
+    ->middleware('auth')
+    ->name('upload');
