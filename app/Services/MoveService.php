@@ -56,11 +56,13 @@ class MoveService
 
         foreach ($uploadedMoves as $move) {
             [$left, $right] = $move;
+            [$winner, $score] = $this->getScore(Collection::make($left), Collection::make($right));
 
             $moveInst = new Move();
             $moveInst->hand_1 = implode(' ', $left);
             $moveInst->hand_2 = implode(' ', $right);
-            $moveInst->winner = (string) $this->getWinner(Collection::make($left), Collection::make($right));
+            $moveInst->winner = (string) $winner;
+            $moveInst->score = $score;
 
             $moves[] = $moveInst;
         }
@@ -72,9 +74,9 @@ class MoveService
      * @param Collection $left
      * @param Collection $right
      *
-     * @return int
+     * @return array [$winner, $score]
      */
-    private function getWinner(Collection $left, Collection $right): int
+    private function getScore(Collection $left, Collection $right): array
     {
         $hand1 = new HandService($left);
         $game1 = $this->pokerService->setHand($hand1)->calculateScore()->getScore();
@@ -86,11 +88,13 @@ class MoveService
          * For the calculation below @see: https://wiki.php.net/rfc/combined-comparison-operator
          */
         $winner = $game1 <=> $game2;
+        $score = $winner === 1 ? $game1 : $game2;
 
         if (0 === $winner) {
             $winner = $hand1->getHigherCard() <=> $hand2->getHigherCard();
+            $score = 0;
         }
 
-        return $winner;
+        return [$winner, $score];
     }
 }
