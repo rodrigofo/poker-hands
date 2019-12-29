@@ -32,16 +32,38 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container">
         @if ($games->count())
-            <div class="row justify-content-center">
+            <div class="row justify-content-center pb-4">
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">Games</div>
 
                         <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Game</th>
+                                    <th>Player 1 Wins</th>
+                                    <th>Player 2 Wins</th>
+                                    <th>Ties</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                @foreach($games as $game)
+                                    <tr>
+                                        <td>
+                                            <a href="#">Game #{{ $game->id }}</a>
+                                        </td>
+
+                                        <td>{{ $game->player1Wins()->count() }}</td>
+                                        <td>{{ $game->player2Wins()->count() }}</td>
+                                        <td>{{ $game->ties()->count() }}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
