@@ -104,12 +104,4 @@ class HandService
     {
         return $this->faces->max();
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->getCards()->implode(' ');
-    }
 }

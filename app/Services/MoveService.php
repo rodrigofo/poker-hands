@@ -8,6 +8,14 @@ use Illuminate\Support\Collection;
 
 class MoveService
 {
+    /** @var PokerService */
+    private PokerService $pokerService;
+
+    public function __construct(PokerService $pokerService)
+    {
+        $this->pokerService = $pokerService;
+    }
+
     /**
      * @param string $file
      *
@@ -44,27 +52,45 @@ class MoveService
      */
     public function handleGameMoves($uploadedMoves): array
     {
-        $pokerService = new PokerService();
         $moves = [];
 
         foreach ($uploadedMoves as $move) {
             [$left, $right] = $move;
 
-            $hand1 = new HandService(Collection::make($left));
-            $game1 = $pokerService->setHand($hand1)->calculateScore()->getScore();
-
-            $hand2 = new HandService(Collection::make($right));
-            $game2 = $pokerService->setHand($hand2)->calculateScore()->getScore();
-
             $moveInst = new Move();
-            $moveInst->hand_1 = (string) $hand1;
-            $moveInst->hand_2 = (string) $hand2;
-            // @see: https://wiki.php.net/rfc/combined-comparison-operator
-            $moveInst->winner = (string) ($game1 <=> $game2);
+            $moveInst->hand_1 = implode(' ', $left);
+            $moveInst->hand_2 = implode(' ', $right);
+            $moveInst->winner = (string) $this->getWinner(Collection::make($left), Collection::make($right));
 
             $moves[] = $moveInst;
         }
 
         return $moves;
+    }
+
+    /**
+     * @param Collection $left
+     * @param Collection $right
+     *
+     * @return int
+     */
+    private function getWinner(Collection $left, Collection $right): int
+    {
+        $hand1 = new HandService($left);
+        $game1 = $this->pokerService->setHand($hand1)->calculateScore()->getScore();
+
+        $hand2 = new HandService($right);
+        $game2 = $this->pokerService->setHand($hand2)->calculateScore()->getScore();
+
+        /**
+         * For the calculation below @see: https://wiki.php.net/rfc/combined-comparison-operator
+         */
+        $winner = $game1 <=> $game2;
+
+        if (0 === $winner) {
+            $winner = $hand1->getHigherCard() <=> $hand2->getHigherCard();
+        }
+
+        return $winner;
     }
 }
