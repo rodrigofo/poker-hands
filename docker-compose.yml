@@ -2,7 +2,8 @@ version: '3.7'
 
 services:
   united_remote_web:
-    image: webdevops/php-nginx-dev:7.4
+    build:
+      context: ./resources/provision/php
     volumes:
       - ./:/var/www/html
     ports:
