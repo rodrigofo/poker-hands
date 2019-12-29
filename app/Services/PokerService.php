@@ -54,7 +54,7 @@ class PokerService
     /**
      * @param Collection $cards
      */
-    private function setCards(Collection $cards): void
+    public function setCards(Collection $cards): void
     {
         $this->cards = $cards;
 
