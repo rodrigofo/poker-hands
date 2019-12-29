@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\EmptyFileException;
 use App\Game;
 use App\Services\MoveService;
+use App\Services\PokerService;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        $this->moveService = new MoveService();
+        $this->moveService = new MoveService(new PokerService());
     }
 
     /**
@@ -56,7 +57,7 @@ class HomeController extends Controller
         if (empty($contents)) {
             return \Redirect::route('home')
                 ->with('message', 'Upload failed!')
-                ->with('upload_status', false);
+                ->with('upload_status', 'danger');
         }
 
         try {
@@ -64,7 +65,7 @@ class HomeController extends Controller
         } catch (EmptyFileException $e) {
             return \Redirect::route('home')
                 ->with('message', $e->getMessage())
-                ->with('upload_status', false);
+                ->with('upload_status', 'danger');
         }
 
         $moves = $this->moveService->handleGameMoves($uploadedMoves);
@@ -75,7 +76,7 @@ class HomeController extends Controller
 
         return \Redirect::route('home')
             ->with('message', 'Game uploaded successfully!')
-            ->with('upload_status', true)
+            ->with('upload_status', 'success')
             ->with('game', $game->id);
     }
 }
