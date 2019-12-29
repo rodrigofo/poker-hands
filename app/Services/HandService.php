@@ -59,6 +59,14 @@ class HandService
     }
 
     /**
+     * @return Collection
+     */
+    public function getFaces(): Collection
+    {
+        return $this->faces;
+    }
+
+    /**
      * @return $this
      */
     private function setSuits(): self
@@ -71,6 +79,14 @@ class HandService
             );
 
         return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSuits(): Collection
+    {
+        return $this->suits;
     }
 
     /**

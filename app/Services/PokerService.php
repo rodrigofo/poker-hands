@@ -21,10 +21,6 @@ class PokerService
     ];
 
     /** @var Collection */
-    private Collection $faces;
-    /** @var Collection */
-    private Collection $suits;
-    /** @var Collection */
     private Collection $groups;
     /** @var Collection */
     private Collection $shifted;
@@ -108,7 +104,7 @@ class PokerService
         $this->groups = Collection::make($this->hand::FACES)
             ->map(
                 function ($face, $index) {
-                    return $this->faces->filter(
+                    return $this->hand->getFaces()->filter(
                         static function ($cardFace) use ($index) {
                             return $index === $cardFace;
                         }
@@ -125,7 +121,7 @@ class PokerService
 
     private function processShifted(): void
     {
-        $this->shifted = $this->faces->map(
+        $this->shifted = $this->hand->getFaces()->map(
             static function ($face) {
                 return ($face + 1) % 13;
             }
@@ -135,7 +131,7 @@ class PokerService
     private function calculateDistance(): void
     {
         $this->distance = min(
-            $this->faces->max() - $this->faces->min(),
+            $this->hand->getFaces()->max() - $this->hand->getFaces()->min(),
             $this->shifted->max() - $this->shifted->min()
         );
     }
@@ -145,9 +141,9 @@ class PokerService
      */
     private function isFlush(): bool
     {
-        return $this->suits->every(
+        return $this->hand->getSuits()->every(
             function ($suit) {
-                return $suit === $this->suits[0];
+                return $suit === $this->hand->getSuits()[0];
             }
         );
     }
@@ -214,8 +210,8 @@ class PokerService
     private function isRoyalFlush(): bool
     {
         return $this->isStraightFlush()
-            && $this->faces[0] === array_flip($this->hand::FACES)['T']
-            && $this->suits[0] === array_flip($this->hand::SUITS)['S'];
+            && $this->hand->getFaces()[0] === array_flip($this->hand::FACES)['T']
+            && $this->hand->getSuits()[0] === array_flip($this->hand::SUITS)['S'];
     }
 
     /**
